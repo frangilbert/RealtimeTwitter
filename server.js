@@ -11,7 +11,8 @@ var express = require('express')
   , MemStore = express.session.MemoryStore
   , app = express()
   , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
+  , io = require('socket.io').listen(server)
+  , redis = require("redis");
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -31,6 +32,11 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler());
+  app.set('twitterConsumerKey', 'xX6QAzcb7irfBitzdh9A');
+  app.set('twitterConsumerSecret', 'IdXYxz7xnE4LOuwgMrqMZV8hdjqRbAUWtYfUuxtv0Q');
+  app.set('twitterAccessToken', '9705392-7vEuTePFLXuYbH7ZZ39CUkRVOjlG6oroLvRVrvQaCW');
+  app.set('twitterAccessSecret', '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY');
+  app.set('twitterStatuses', 'statuses/sample');
 });
 
 app.get('/', routes.index);
@@ -43,16 +49,38 @@ server.listen(app.get('port'), function(){
 
 twitter = require('twitter'),
     twitterConnection = new twitter({
-        consumer_key: 'xX6QAzcb7irfBitzdh9A',
-        consumer_secret: 'IdXYxz7xnE4LOuwgMrqMZV8hdjqRbAUWtYfUuxtv0Q',
-        access_token_key: '9705392-7vEuTePFLXuYbH7ZZ39CUkRVOjlG6oroLvRVrvQaCW',
-        access_token_secret: '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY'
+        consumer_key: app.get('twitterConsumerKey'),
+        consumer_secret: app.get('twitterConsumerSecret'),
+        access_token_key: app.get('twitterAccessToken'),
+        access_token_secret: app.get('twitterAccessSecret')
     });
 
-io.sockets.on('connection', function (socket) {
-  twitterConnection.stream('statuses/sample', function(stream) {
-    stream.on('data', function(data) {
-            socket.emit('tweets', data);
+    io.sockets.on('connection', function (socket) {
+        var status = app.get('twitterStatuses');
+
+        twitterConnection.stream(status, function (stream) {
+
+            stream.on('data', function (data) {
+                console.log(data.id)
+
+                if (data !== null) {
+                    //INSERT TO REDIS
+                    client = redis.createClient();
+
+                    client.on('error', function (err) {
+                        console.log('Error' + err);
+                    });
+
+                    if (data.text !== undefined) {
+                        client.hset('twitter', data.id_str, data.text);
+                    }
+                    //client.hgetall("twitter", function (err, obj) {
+                    //    console.dir(obj);
+                    //});
+                    client.quit();
+
+                    socket.emit('tweets', data);
+                }
+            });
         });
     });
-});

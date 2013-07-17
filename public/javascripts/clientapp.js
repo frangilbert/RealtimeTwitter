@@ -30,10 +30,9 @@ $().ready(function(){
                     map: map,
                     title:data.text
                 });
-            }
-            //console.log(data);
-            //socket.emit('my other event', { my: 'data' });           
 
+                console.log(data);
+            }
         });
     },
 

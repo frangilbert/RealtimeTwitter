@@ -1,12 +1,5 @@
 var redis = require("redis"),
-    util = require('util'),
-    twitter = require('twitter'),
-    twApi = new twitter({
-        consumer_key: 'xX6QAzcb7irfBitzdh9A',
-        consumer_secret: 'IdXYxz7xnE4LOuwgMrqMZV8hdjqRbAUWtYfUuxtv0Q',
-        access_token_key: '9705392-7vEuTePFLXuYbH7ZZ39CUkRVOjlG6oroLvRVrvQaCW',
-        access_token_secret: '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY'
-    });
+    util = require('util');
 
 exports.connect = function (req, res) {
     client = redis.createClient();
