@@ -1,0 +1,12 @@
+Application has thrown an uncaught exception and is terminated:
+Error: .get() requires callback functions but got a [object Undefined]
+    at Router.route.Route.sensitive (C:\git\RealTwitter\node_modules\express\lib\router\index.js:252:11)
+    at Array.forEach (native)
+    at Router.route (C:\git\RealTwitter\node_modules\express\lib\router\index.js:248:13)
+    at Router.methods.forEach.Router.(anonymous function) [as get] (C:\git\RealTwitter\node_modules\express\lib\router\index.js:270:16)
+    at Function.methods.forEach.app.(anonymous function) [as get] (C:\git\RealTwitter\node_modules\express\lib\application.js:412:26)
+    at Object.<anonymous> (C:\git\RealTwitter\server.js:36:5)
+    at Module._compile (module.js:449:26)
+    at Object.Module._extensions..js (module.js:467:10)
+    at Module.load (module.js:356:32)
+    at Function.Module._load (module.js:312:12)

@@ -1,0 +1,10 @@
+Application has thrown an uncaught exception and is terminated:
+Error: ERR wrong number of arguments for 'hset' command
+    at ReplyParser.RedisClient.init_parser (C:\git\RealTwitter\node_modules\redis\index.js:279:27)
+    at ReplyParser.EventEmitter.emit (events.js:96:17)
+    at ReplyParser.send_error (C:\git\RealTwitter\node_modules\redis\lib\parser\javascript.js:296:10)
+    at ReplyParser.execute (C:\git\RealTwitter\node_modules\redis\lib\parser\javascript.js:181:22)
+    at RedisClient.on_data (C:\git\RealTwitter\node_modules\redis\index.js:504:27)
+    at Socket.<anonymous> (C:\git\RealTwitter\node_modules\redis\index.js:82:14)
+    at Socket.EventEmitter.emit (events.js:96:17)
+    at TCP.onread (net.js:397:14)
