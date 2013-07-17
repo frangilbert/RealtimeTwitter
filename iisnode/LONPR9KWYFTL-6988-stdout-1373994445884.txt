@@ -1,6 +1,0 @@
-Express server listening on port \\.\pipe\a2dc1eb3-1560-4531-b5f5-5c1696b48dee
-Working
-[90mGET /connect [32m200 [90m4ms - 6[0m
-Reply: OK
-node_redis: no callback to send error: ERR wrong number of arguments for 'hset' command
-{ 'hashtest 1': 'some value' }
