@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -9,9 +8,10 @@ var express = require('express')
   , realtime = require('./routes/realtime')
   , http = require('http')
   , path = require('path')
-  , MemStore = express.session.MemoryStore;
-
-var app = express();
+  , MemStore = express.session.MemoryStore
+  , app = express()
+  , server = require('http').createServer(app)
+  , io = require('socket.io').listen(server);
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -37,6 +37,22 @@ app.get('/', routes.index);
 app.get('/connect', realtime.connect);
 app.get('/users', user.list);
 
-http.createServer(app).listen(app.get('port'), function(){
+server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
+});
+
+twitter = require('twitter'),
+    twitterConnection = new twitter({
+        consumer_key: 'xX6QAzcb7irfBitzdh9A',
+        consumer_secret: 'IdXYxz7xnE4LOuwgMrqMZV8hdjqRbAUWtYfUuxtv0Q',
+        access_token_key: '9705392-7vEuTePFLXuYbH7ZZ39CUkRVOjlG6oroLvRVrvQaCW',
+        access_token_secret: '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY'
+    });
+
+io.sockets.on('connection', function (socket) {
+  twitterConnection.stream('statuses/sample', function(stream) {
+    stream.on('data', function(data) {
+            socket.emit('tweets', data);
+        });
+    });
 });
