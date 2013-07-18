@@ -75,7 +75,6 @@ twitter = require('twitter'),
         twitterConnection.stream(status, function (stream) {
 
             stream.on('data', function (data) {
-                console.log(data.id)
 
                 ////INSERT TO REDIS
                 //client = redis.createClient();
