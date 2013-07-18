@@ -18,7 +18,7 @@ $().ready(function(){
             
         }
         
-        var socket = io.connect('http://localhost');
+        var socket = io.connect('http://hidden-caverns-9063.herokuapp.com');
         socket.on('tweets', function (data) {
             if(data.coordinates !== undefined && data.coordinates !== null){
                 var coords = data.coordinates.coordinates;
