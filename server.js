@@ -53,7 +53,7 @@ twitter = require('twitter'),
         consumer_secret: app.get('twitterConsumerSecret'),
         access_token_key: app.get('twitterAccessToken'),
         access_token_secret: app.get('twitterAccessSecret')
-    });
+    }); 
 
     io.sockets.on('connection', function (socket) {
         var status = app.get('twitterStatuses');
@@ -63,24 +63,22 @@ twitter = require('twitter'),
             stream.on('data', function (data) {
                 console.log(data.id)
 
-                if (data !== null) {
-                    //INSERT TO REDIS
-                    client = redis.createClient();
+                ////INSERT TO REDIS
+                //client = redis.createClient();
 
-                    client.on('error', function (err) {
-                        console.log('Error' + err);
-                    });
+                //client.on('error', function (err) {
+                //    console.log('Error' + err);
+                //});
 
-                    if (data.text !== undefined) {
-                        client.hset('twitter', data.id_str, data.text);
-                    }
-                    //client.hgetall("twitter", function (err, obj) {
-                    //    console.dir(obj);
-                    //});
-                    client.quit();
+                //if (data.text !== undefined) {
+                //    client.hset('twitter', data.id_str, data.text);
+                //}
+                ////client.hgetall("twitter", function (err, obj) {
+                ////    console.dir(obj);
+                ////});
+                //client.quit();
 
-                    socket.emit('tweets', data);
-                }
+                socket.emit('tweets', data);
             });
         });
     });
