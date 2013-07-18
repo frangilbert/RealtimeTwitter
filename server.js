@@ -39,6 +39,15 @@ app.configure('development', function(){
   app.set('twitterStatuses', 'statuses/sample');
 });
 
+app.configure('production', function(){
+  app.use(express.errorHandler());
+  app.set('twitterConsumerKey', 'xX6QAzcb7irfBitzdh9A');
+  app.set('twitterConsumerSecret', 'IdXYxz7xnE4LOuwgMrqMZV8hdjqRbAUWtYfUuxtv0Q');
+  app.set('twitterAccessToken', '9705392-7vEuTePFLXuYbH7ZZ39CUkRVOjlG6oroLvRVrvQaCW');
+  app.set('twitterAccessSecret', '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY');
+  app.set('twitterStatuses', 'statuses/sample');
+});
+
 app.get('/', routes.index);
 app.get('/connect', realtime.connect);
 app.get('/users', user.list);
@@ -54,6 +63,11 @@ twitter = require('twitter'),
         access_token_key: app.get('twitterAccessToken'),
         access_token_secret: app.get('twitterAccessSecret')
     }); 
+
+    io.configure(function () { 
+      io.set("transports", ["xhr-polling"]); 
+      io.set("polling duration", 10); 
+    });
 
     io.sockets.on('connection', function (socket) {
         var status = app.get('twitterStatuses');
