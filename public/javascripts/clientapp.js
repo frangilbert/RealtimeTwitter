@@ -14,25 +14,33 @@ $().ready(function(){
     },
 
     ui.twitterStream = function(){
-        var checkClearMap = function(){
-            
-        }
-        
         var socket = io.connect(window.location.host);
+        
+        socket.on('connect', function(data){
+			//setStatus('connected');
+			socket.emit('subscribe', {channel:'tweet-channel'});
+		});
+            
+        socket.on('reconnecting', function(data){
+			console.log('reconnecting');
+		});     
+        
         socket.on('tweets', function (data) {
-            if(data.coordinates !== undefined && data.coordinates !== null){
-                var coords = data.coordinates.coordinates;
+            console.log(data)
+            
+            //if(data.coordinates !== undefined && data.coordinates !== null){
+            //    var coords = data.coordinates.coordinates;
 
-                map.setOptions();
-                var marker = new google.maps.Marker({
-                    animation: google.maps.Animation.DROP,
-                    position: new google.maps.LatLng(coords[1], coords[0]),
-                    map: map,
-                    title:data.text
-                });
+            //    map.setOptions();
+            //    var marker = new google.maps.Marker({
+            //        animation: google.maps.Animation.DROP,
+            //        position: new google.maps.LatLng(coords[1], coords[0]),
+            //        map: map,
+            //        title:data.text
+            //    });
 
-                console.log(data);
-            }
+            //    console.log(data);
+            //}
         });
     },
 

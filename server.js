@@ -32,20 +32,10 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler());
-  app.set('twitterConsumerKey', 'xX6QAzcb7irfBitzdh9A');
-  app.set('twitterConsumerSecret', 'IdXYxz7xnE4LOuwgMrqMZV8hdjqRbAUWtYfUuxtv0Q');
-  app.set('twitterAccessToken', '9705392-7vEuTePFLXuYbH7ZZ39CUkRVOjlG6oroLvRVrvQaCW');
-  app.set('twitterAccessSecret', '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY');
-  app.set('twitterStatuses', 'statuses/sample');
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
-  app.set('twitterConsumerKey', 'xX6QAzcb7irfBitzdh9A');
-  app.set('twitterConsumerSecret', 'IdXYxz7xnE4LOuwgMrqMZV8hdjqRbAUWtYfUuxtv0Q');
-  app.set('twitterAccessToken', '9705392-7vEuTePFLXuYbH7ZZ39CUkRVOjlG6oroLvRVrvQaCW');
-  app.set('twitterAccessSecret', '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY');
-  app.set('twitterStatuses', 'statuses/sample');
 });
 
 app.get('/', routes.index);
@@ -56,42 +46,45 @@ server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
-twitter = require('twitter'),
-    twitterConnection = new twitter({
-        consumer_key: app.get('twitterConsumerKey'),
-        consumer_secret: app.get('twitterConsumerSecret'),
-        access_token_key: app.get('twitterAccessToken'),
-        access_token_secret: app.get('twitterAccessSecret')
-    }); 
+//io.configure(function () { 
+//    io.set("transports", ["xhr-polling"]); 
+//    io.set("polling duration", 10); 
+//});
 
-    io.configure(function () { 
-      io.set("transports", ["xhr-polling"]); 
-      io.set("polling duration", 10); 
+var client = redis.createClient(),
+    publisher = redis.createClient();
+
+io.sockets.on('connection', function (socket) {
+
+    socket.on('subscribe', function (data) {
+        client.subscribe(data.channel);
     });
 
-    io.sockets.on('connection', function (socket) {
-        var status = app.get('twitterStatuses');
-
-        twitterConnection.stream(status, function (stream) {
-
-            stream.on('data', function (data) {
-
-                ////INSERT TO REDIS
-                //client = redis.createClient();
-
-                //client.on('error', function (err) {
-                //    console.log('Error' + err);
-                //});
-
-                //if (data.text !== undefined) {
-                //    client.hset('twitter', data.id_str, data.text);
-                //}
-                ////client.hgetall("twitter", function (err, obj) {
-                ////    console.dir(obj);
-                ////});
-                //client.quit();
-
-                socket.emit('tweets', data);
-            });
-        });
+    publisher.on('message', function (channel, message) {
+        var resp = { 'text': message, 'channel': channel }
+        console.log(message);
+        socket.emit('tweets', message);
     });
+
+    ////GET FROM REDIS
+    //client = redis.createClient();
+
+    //client.on('error', function (err) {
+    //    console.log('Error' + err);
+    //});
+
+    //if (data.text !== undefined) {
+    //    client.hset('twitter', data.id_str, data.text);
+    //}
+    ////client.hgetall("twitter", function (err, obj) {
+    ////    console.dir(obj);
+    ////});
+    //client.quit();
+
+    //socket.emit('tweets', data);
+});
+
+setInterval(function () {
+    var no = Math.floor(Math.random() * 100);
+    publisher.publish('tweet-channel', 'Generated random no ' + no);
+}, 1000);
