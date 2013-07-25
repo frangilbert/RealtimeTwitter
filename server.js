@@ -51,19 +51,31 @@ server.listen(app.get('port'), function(){
 //    io.set("polling duration", 10); 
 //});
 
-var client = redis.createClient(),
-    publisher = redis.createClient();
+var client = redis.createClient();
 
 io.sockets.on('connection', function (socket) {
+    var subscribe = redis.createClient();
+    subscribe.subscribe('pubsub');
 
-    socket.on('subscribe', function (data) {
-        client.subscribe(data.channel);
+    subscribe.on('message', function (channel, message) {
+        //client.send(message);
+        console.log(message.text);
+
+        //var resp = { 'text': message, 'channel': channel }
+        //console.log(message);
+        socket.emit('message', message);
     });
 
-    publisher.on('message', function (channel, message) {
-        var resp = { 'text': message, 'channel': channel }
-        console.log(message);
-        socket.emit('tweets', message);
+    client.on('message', function (msg) {
+        console.log('New Message');
+    });
+
+    client.on('error', function (error) {
+        console.log('error');
+    });
+
+    client.on('disconnect', function () {
+        subscribe.quit();
     });
 
     ////GET FROM REDIS
@@ -83,8 +95,3 @@ io.sockets.on('connection', function (socket) {
 
     //socket.emit('tweets', data);
 });
-
-setInterval(function () {
-    var no = Math.floor(Math.random() * 100);
-    publisher.publish('tweet-channel', 'Generated random no ' + no);
-}, 1000);

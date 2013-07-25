@@ -17,18 +17,20 @@ $().ready(function(){
         var socket = io.connect(window.location.host);
         
         socket.on('connect', function(data){
-			//setStatus('connected');
-			socket.emit('subscribe', {channel:'tweet-channel'});
+			//socket.emit('subscribe', {channel:'tweet-channel'});
+            console.log('Connected');
 		});
             
         socket.on('reconnecting', function(data){
-			console.log('reconnecting');
-		});     
+			console.log('Reconnecting');
+		});
+
+        socket.on('disconnect', function(data){
+			socket.emit('disconnect');
+		}); 
         
-        socket.on('tweets', function (data) {
-            console.log(data)
-            
-            //if(data.coordinates !== undefined && data.coordinates !== null){
+        socket.on('message', function (data) {
+            if(data.coordinates !== undefined && data.coordinates !== null){
             //    var coords = data.coordinates.coordinates;
 
             //    map.setOptions();
@@ -39,8 +41,8 @@ $().ready(function(){
             //        title:data.text
             //    });
 
-            //    console.log(data);
-            //}
+                console.log(data);
+            }
         });
     },
 

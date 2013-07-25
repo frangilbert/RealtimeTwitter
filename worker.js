@@ -62,7 +62,7 @@ twitterConnection.stream('statuses/sample', function (stream) {
     stream.on('data', function (data) {
 
         ////INSERT TO REDIS
-        console.log(data);
+        //console.log(data);
         client = redis.createClient();
 
         client.on('error', function (err) {
@@ -70,9 +70,10 @@ twitterConnection.stream('statuses/sample', function (stream) {
         });
 
         if (data.text !== undefined) {
-            client.hset('twitters', data.id_str, data.text);
+            client.hset('tweets', data.id_str, data);
+            client.publish('pubsub', data);
         }
-
+                
         client.quit();
     });
 });
