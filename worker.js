@@ -60,20 +60,27 @@ twitterConnection = new twitter({
 twitterConnection.stream('statuses/sample', function (stream) {
 
     stream.on('data', function (data) {
-
-        ////INSERT TO REDIS
-        //console.log(data);
         client = redis.createClient();
 
         client.on('error', function (err) {
             console.log('Error' + err);
         });
 
-        if (data.text !== undefined) {
-            client.hset('tweets', data.id_str, data);
-            client.publish('pubsub', data);
+        if (data.text !== undefined && data.coordinates != null) {
+            var tweetData = {
+                'text': data.text,
+                'tweetUrl': data.url,
+                'coordinates': { 'latitude': data.coordinates.coordinates[1], 'longitude': data.coordinates.coordinates[0] },
+                'location': data.location,
+                'time': data.createdAt,
+                'user': data.user.name,
+                'screenname' : data.user.screen_name
+            };
+
+            client.hset('tweets', data.id_str, JSON.stringify(tweetData));
+            client.publish('pubsub', JSON.stringify(tweetData));
         }
-                
+
         client.quit();
     });
 });

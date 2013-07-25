@@ -6,7 +6,7 @@ $().ready(function(){
 
 (function ($) {
     ui.init = function(){
-        var mapInit = ui.maps();
+        var mapInit = maps();
         google.maps.event.addDomListener(window, 'load', mapInit);
 
         ui.twitterStream();
@@ -30,23 +30,21 @@ $().ready(function(){
 		}); 
         
         socket.on('message', function (data) {
-            if(data.coordinates !== undefined && data.coordinates !== null){
-            //    var coords = data.coordinates.coordinates;
-
-            //    map.setOptions();
-            //    var marker = new google.maps.Marker({
-            //        animation: google.maps.Animation.DROP,
-            //        position: new google.maps.LatLng(coords[1], coords[0]),
-            //        map: map,
-            //        title:data.text
-            //    });
-
-                console.log(data);
-            }
+            var coords = data.coordinates;
+            
+            console.log(data.text);    
+            
+            map.setOptions();
+            var marker = new google.maps.Marker({
+                animation: google.maps.Animation.DROP,
+                position: new google.maps.LatLng(coords.latitude, coords.logitude),
+                map: map,
+                title:data.text
+            });            
         });
     },
 
-    ui.maps = function(){
+    maps = function(){
         var mapOptions = {
             zoom: 3,
             center: new google.maps.LatLng(47.6842897, 17.3434897),

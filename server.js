@@ -58,16 +58,9 @@ io.sockets.on('connection', function (socket) {
     subscribe.subscribe('pubsub');
 
     subscribe.on('message', function (channel, message) {
-        //client.send(message);
-        console.log(message.text);
-
-        //var resp = { 'text': message, 'channel': channel }
+        var jsonMessage = JSON.parse(message);
         //console.log(message);
-        socket.emit('message', message);
-    });
-
-    client.on('message', function (msg) {
-        console.log('New Message');
+        socket.emit('message', jsonMessage);
     });
 
     client.on('error', function (error) {
