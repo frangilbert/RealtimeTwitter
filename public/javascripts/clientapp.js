@@ -32,17 +32,23 @@ $().ready(function(){
         socket.on('message', function (data) {
             var coords = data.coordinates;
             
-            console.log(data.text);    
+            console.log(JSON.stringify(coords));    
             
             map.setOptions();
             var marker = new google.maps.Marker({
                 animation: google.maps.Animation.DROP,
-                position: new google.maps.LatLng(coords.latitude, coords.logitude),
+                position: new google.maps.LatLng(coords.latitude, coords.longitude),
                 map: map,
                 title:data.text
-            });            
+            });
+            
+            //OnClick Add Tweet details         
         });
     },
+
+    showMessage = function(){
+        
+    }
 
     maps = function(){
         var mapOptions = {
