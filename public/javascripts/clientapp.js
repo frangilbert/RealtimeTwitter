@@ -9,20 +9,30 @@ $().ready(function(){
         var mapInit = maps();
         google.maps.event.addDomListener(window, 'load', mapInit);
 
-        ui.twitterStream();
+        twitterStream();
         
     },
 
-    ui.twitterStream = function(){
+    twitterStream = function(){
         var socket = io.connect(window.location.host);
+
+        socket.on('loadedtweets', function(data){
+			$.each(data, function(index, value){
+                addToMap(JSON.parse(value));
+            });
+            
+		});
+
+        //Load Tweets on first connect
+        socket.emit('loadtweets');
         
-        socket.on('connect', function(data){
-			//socket.emit('subscribe', {channel:'tweet-channel'});
-            console.log('Connected');
+        socket.on('connect', function(data){			
+            showMessage('Connected!', 2000);            
 		});
             
         socket.on('reconnecting', function(data){
 			console.log('Reconnecting');
+            showMessage('Disconnected. Trying a Reconnect...', 2000);
 		});
 
         socket.on('disconnect', function(data){
@@ -30,9 +40,14 @@ $().ready(function(){
 		}); 
         
         socket.on('message', function (data) {
-            var coords = data.coordinates;
+            addToMap(data);
             
-            console.log(JSON.stringify(coords));    
+            //OnClick Add Tweet details         
+        });        
+    },
+
+    addToMap = function(data){
+        var coords = data.coordinates;
             
             map.setOptions();
             var marker = new google.maps.Marker({
@@ -41,13 +56,16 @@ $().ready(function(){
                 map: map,
                 title:data.text
             });
-            
-            //OnClick Add Tweet details         
-        });
-    },
+    }
 
-    showMessage = function(){
-        
+    showMessage = function(message, timeout){
+        $('#connectionstatus').html(message).fadeIn('slow');
+
+        if(timeout > 0) {
+            window.setInterval(function(){
+                $('#connectionstatus').fadeOut('slow');
+            }, timeout);
+        }
     }
 
     maps = function(){

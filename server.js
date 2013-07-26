@@ -28,6 +28,8 @@ app.configure(function(){
   app.use(express.session({secret: '+p;jwD5%9][34y3|?r4th"8j8{R,y|', store: MemStore({
     reapInterval: 60000 * 10
   })}));
+
+  app.set('tweetsToLoad', 50);
 });
 
 app.configure('development', function(){
@@ -55,11 +57,10 @@ var client = redis.createClient();
 
 io.sockets.on('connection', function (socket) {
     var subscribe = redis.createClient();
-    subscribe.subscribe('pubsub');
+    subscribe.subscribe('pubsub');    
 
     subscribe.on('message', function (channel, message) {
         var jsonMessage = JSON.parse(message);
-        //console.log(message);
         socket.emit('message', jsonMessage);
     });
 
@@ -71,20 +72,11 @@ io.sockets.on('connection', function (socket) {
         subscribe.quit();
     });
 
-    ////GET FROM REDIS
-    //client = redis.createClient();
+    socket.on('loadtweets', function () {
+        client.lrange("tweets", 0, app.set('tweetsToLoad'), function (err, messages) {
+            socket.emit('loadedtweets', messages);
+        });
+    });
 
-    //client.on('error', function (err) {
-    //    console.log('Error' + err);
-    //});
-
-    //if (data.text !== undefined) {
-    //    client.hset('twitter', data.id_str, data.text);
-    //}
-    ////client.hgetall("twitter", function (err, obj) {
-    ////    console.dir(obj);
-    ////});
-    //client.quit();
-
-    //socket.emit('tweets', data);
 });
+

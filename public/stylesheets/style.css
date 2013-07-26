@@ -6,9 +6,17 @@ a {
   color: #00B7FF;
 }
 
+#connectionstatus {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    display: none;
+}
+
 #map-canvas {
     width: 100%;
     position: absolute;
     top: 0px; 
     bottom: 0px;
+    z-index: 1;
 }

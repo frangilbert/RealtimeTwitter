@@ -77,7 +77,7 @@ twitterConnection.stream('statuses/sample', function (stream) {
                 'screenname' : data.user.screen_name
             };
 
-            client.hset('tweets', data.id_str, JSON.stringify(tweetData));
+            client.lpush('tweets', JSON.stringify(tweetData));
             client.publish('pubsub', JSON.stringify(tweetData));
         }
 
