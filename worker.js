@@ -8,7 +8,7 @@ var express = require('express')
   , realtime = require('./routes/realtime')
   , http = require('http')
   , path = require('path')
-  //, MemStore = express.session.MemoryStore
+  , MemStore = express.session.MemoryStore
   , app = express()
   , server = require('http').createServer(app)
   , redis = require("redis");
@@ -22,9 +22,9 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
-  //app.use(express.session({secret: '+p;jwD5%9][34y3|?r4th"8j8{R,y|', store: MemStore({
-  //  reapInterval: 60000 * 10
-  //})}));
+  app.use(express.session({secret: '+p;jwD5%9][34y3|?r4th"8j8{R,y|', store: MemStore({
+    reapInterval: 60000 * 10
+  })}));
 });
 
 app.configure('development', function(){
@@ -35,9 +35,9 @@ app.configure('development', function(){
   app.set('twitter_access_secret', '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY');
   app.set('twitter_statuses', 'statuses/sample');
 
-  app.set('redis_host', 'beardfish.redistogo.com');
-  app.set('redis_port', 10074);
-  app.set('redis_password', '6f16eb4577ed2398a6599b69ee67bc11');
+  app.set('redis_host', 'localhost');
+  app.set('redis_port', 6379);
+  app.set('redis_password', '');
   
 });
 
@@ -69,20 +69,15 @@ twitterConnection = new twitter({
     access_token_secret: app.get('twitter_access_secret')
 });
 
-client = redis.createClient(app.get('redis_port'), app.get('redis_host'));
-if (app.set('redis_password') !== '') {
-    client.auth(app.get('redis_password'), function() {console.log("Connected!");});
-}
-
-twitterConnection.stream(app.get('twitter_statuses'), function (stream) {
-    stream.setMaxListeners(0);
+twitterConnection.stream(app.get('twitter_statuses'), function (stream) {   
 
     stream.on('data', function (data) {
+        client = redis.createClient(app.get('redis_port'), app.get('redis_host'));
+        client.auth(app.get('redis_password'), function () { console.log("Connected!"); });
+
         client.on('error', function (err) {
             console.log(err);
         });
-
-        console.log(data);
 
         if (data.text !== undefined && data.coordinates != null) {
             var tweetData = {
@@ -99,6 +94,6 @@ twitterConnection.stream(app.get('twitter_statuses'), function (stream) {
             client.publish('pubsub', JSON.stringify(tweetData));
         }
 
-        //client.quit();
+        client.quit();
     });
 });
