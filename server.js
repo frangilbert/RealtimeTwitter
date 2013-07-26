@@ -34,10 +34,16 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler());
+  app.set('redis_host', '127.0.0.1');
+  app.set('redis_port', 6379);
+  app.set('redis_password', '');
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  app.set('redis_host', 'master.redisnode.com');
+  app.set('redis_port', 12381);
+  app.set('redis_password', 'c2864659899f4271895f59a87ab023c2');
 });
 
 app.get('/', routes.index);
@@ -53,11 +59,21 @@ server.listen(app.get('port'), function(){
 //    io.set("polling duration", 10); 
 //});
 
-var client = redis.createClient();
+var redisPort = app.get('redis_port');
+var redisHost = app.get('redis_host');
+var redisPassword = app.get('redis_password');
+
+var client = redis.createClient(redisPort, redisHost);
+if(redisPassword !== ''){
+    client.auth(redisPassword);
+}
 
 io.sockets.on('connection', function (socket) {
-    var subscribe = redis.createClient();
-    subscribe.subscribe('pubsub');    
+    var subscribe = redis.createClient(redisPort, redisHost);
+    if (redisPassword !== '') {
+        subscribe.auth(redisPassword);
+    }
+    subscribe.subscribe('pubsub');
 
     subscribe.on('message', function (channel, message) {
         var jsonMessage = JSON.parse(message);
@@ -65,11 +81,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     client.on('error', function (error) {
-        console.log('error');
-    });
-
-    client.on('disconnect', function () {
-        subscribe.quit();
+        console.log(error);
     });
 
     socket.on('loadtweets', function () {
