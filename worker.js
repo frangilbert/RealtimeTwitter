@@ -38,6 +38,7 @@ app.configure('development', function(){
   app.set('redis_host', '127.0.0.1');
   app.set('redis_port', 6379);
   app.set('redis_password', '');
+  
 });
 
 app.configure('production', function(){
@@ -48,9 +49,12 @@ app.configure('production', function(){
   app.set('twitter_access_secret', '763xNbgbxjvI9Fn4v6BVyBwEsFzZ2BtHiljY4g0GIY');
   app.set('twitter_statuses', 'statuses/sample');
 
-  app.set('redis_host', 'master.redisnode.com');
-  app.set('redis_port', 12381);
-  app.set('redis_password', 'c2864659899f4271895f59a87ab023c2');
+  //app.set('redis_host', 'master.redisnode.com');
+  //app.set('redis_port', 12381);
+  //app.set('redis_password', 'c2864659899f4271895f59a87ab023c2');
+  app.set('redis_host', 'beardfish.redistogo.com');
+  app.set('redis_port', 10074);
+  app.set('redis_password', '6f16eb4577ed2398a6599b69ee67bc11');
 });
 
 server.listen(app.get('port'), function(){
