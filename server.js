@@ -35,14 +35,14 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler());
   app.set('redis_host', '127.0.0.1');
-  app.set('redis_port', '6379');
+  app.set('redis_port', 6379);
   app.set('redis_password', '');
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
   app.set('redis_host', 'master.redisnode.com');
-  app.set('redis_port', '12381');
+  app.set('redis_port', 12381);
   app.set('redis_password', 'c2864659899f4271895f59a87ab023c2');
 });
 
@@ -54,10 +54,10 @@ server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
-//io.configure(function () { 
-//    io.set("transports", ["xhr-polling"]); 
-//    io.set("polling duration", 10); 
-//});
+io.configure(function () { 
+    io.set("transports", ["xhr-polling"]); 
+    io.set("polling duration", 10); 
+});
 
 var redisPort = app.get('redis_port');
 var redisHost = app.get('redis_host');
