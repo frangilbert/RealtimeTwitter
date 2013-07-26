@@ -84,11 +84,11 @@ io.sockets.on('connection', function (socket) {
     });
 
     client.on('error', function (error) {
-        console.log(error);
+        console.log('Redis Error: ' + error);
     });
 
     socket.on('loadtweets', function () {
-        client.lrange("tweets", 0, app.set('tweetsToLoad'), function (err, messages) {
+        client.lrange("tweets", 0, app.get('tweetsToLoad'), function (err, messages) {
             socket.emit('loadedtweets', messages);
         });
     });

@@ -27,6 +27,7 @@ $().ready(function(){
         socket.emit('loadtweets');
         
         socket.on('connect', function(data){			
+            console.log('Connected to: ' + window.location.host)
             showMessage('Connected!', 2000);            
 		});
             
