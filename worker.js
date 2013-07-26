@@ -36,7 +36,7 @@ app.configure('development', function(){
   app.set('twitter_statuses', 'statuses/sample');
 
   app.set('redis_host', '127.0.0.1');
-  app.set('redis_port', 6379);
+  app.set('redis_port', '6379');
   app.set('redis_password', '');
 });
 
@@ -49,7 +49,7 @@ app.configure('production', function(){
   app.set('twitter_statuses', 'statuses/sample');
 
   app.set('redis_host', 'master.redisnode.com');
-  app.set('redis_port', 12381);
+  app.set('redis_port', '12381');
   app.set('redis_password', 'c2864659899f4271895f59a87ab023c2');
 });
 
